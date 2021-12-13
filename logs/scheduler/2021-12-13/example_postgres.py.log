@@ -7834,3 +7834,38 @@ SyntaxError: invalid syntax
 [2021-12-13 21:29:03,875] {logging_mixin.py:109} INFO - [2021-12-13 21:29:03,875] {dag.py:2396} INFO - Sync 1 DAGs
 [2021-12-13 21:29:03,892] {logging_mixin.py:109} INFO - [2021-12-13 21:29:03,892] {dag.py:2928} INFO - Setting next_dagrun for postgres_operator_dag to None
 [2021-12-13 21:29:03,901] {processor.py:171} INFO - Processing /opt/airflow/dags/example_postgres.py took 0.077 seconds
+[2021-12-13 21:29:33,999] {processor.py:163} INFO - Started process (PID=6411) to work on /opt/airflow/dags/example_postgres.py
+[2021-12-13 21:29:34,001] {processor.py:625} INFO - Processing file /opt/airflow/dags/example_postgres.py for tasks to queue
+[2021-12-13 21:29:34,001] {logging_mixin.py:109} INFO - [2021-12-13 21:29:34,001] {dagbag.py:500} INFO - Filling up the DagBag from /opt/airflow/dags/example_postgres.py
+[2021-12-13 21:29:34,036] {processor.py:637} INFO - DAG(s) dict_keys(['postgres_operator_dag']) retrieved from /opt/airflow/dags/example_postgres.py
+[2021-12-13 21:29:34,045] {logging_mixin.py:109} INFO - [2021-12-13 21:29:34,045] {dag.py:2396} INFO - Sync 1 DAGs
+[2021-12-13 21:29:34,061] {logging_mixin.py:109} INFO - [2021-12-13 21:29:34,060] {dag.py:2928} INFO - Setting next_dagrun for postgres_operator_dag to None
+[2021-12-13 21:29:34,070] {processor.py:171} INFO - Processing /opt/airflow/dags/example_postgres.py took 0.075 seconds
+[2021-12-13 21:30:04,156] {processor.py:163} INFO - Started process (PID=6441) to work on /opt/airflow/dags/example_postgres.py
+[2021-12-13 21:30:04,158] {processor.py:625} INFO - Processing file /opt/airflow/dags/example_postgres.py for tasks to queue
+[2021-12-13 21:30:04,159] {logging_mixin.py:109} INFO - [2021-12-13 21:30:04,159] {dagbag.py:500} INFO - Filling up the DagBag from /opt/airflow/dags/example_postgres.py
+[2021-12-13 21:30:04,200] {processor.py:637} INFO - DAG(s) dict_keys(['postgres_operator_dag']) retrieved from /opt/airflow/dags/example_postgres.py
+[2021-12-13 21:30:04,214] {logging_mixin.py:109} INFO - [2021-12-13 21:30:04,214] {dag.py:2396} INFO - Sync 1 DAGs
+[2021-12-13 21:30:04,233] {logging_mixin.py:109} INFO - [2021-12-13 21:30:04,232] {dag.py:2928} INFO - Setting next_dagrun for postgres_operator_dag to None
+[2021-12-13 21:30:04,241] {processor.py:171} INFO - Processing /opt/airflow/dags/example_postgres.py took 0.090 seconds
+[2021-12-13 21:30:34,321] {processor.py:163} INFO - Started process (PID=6462) to work on /opt/airflow/dags/example_postgres.py
+[2021-12-13 21:30:34,323] {processor.py:625} INFO - Processing file /opt/airflow/dags/example_postgres.py for tasks to queue
+[2021-12-13 21:30:34,324] {logging_mixin.py:109} INFO - [2021-12-13 21:30:34,323] {dagbag.py:500} INFO - Filling up the DagBag from /opt/airflow/dags/example_postgres.py
+[2021-12-13 21:30:34,356] {processor.py:637} INFO - DAG(s) dict_keys(['postgres_operator_dag']) retrieved from /opt/airflow/dags/example_postgres.py
+[2021-12-13 21:30:34,366] {logging_mixin.py:109} INFO - [2021-12-13 21:30:34,365] {dag.py:2396} INFO - Sync 1 DAGs
+[2021-12-13 21:30:34,381] {logging_mixin.py:109} INFO - [2021-12-13 21:30:34,381] {dag.py:2928} INFO - Setting next_dagrun for postgres_operator_dag to None
+[2021-12-13 21:30:34,390] {processor.py:171} INFO - Processing /opt/airflow/dags/example_postgres.py took 0.073 seconds
+[2021-12-13 21:31:04,498] {processor.py:163} INFO - Started process (PID=6483) to work on /opt/airflow/dags/example_postgres.py
+[2021-12-13 21:31:04,499] {processor.py:625} INFO - Processing file /opt/airflow/dags/example_postgres.py for tasks to queue
+[2021-12-13 21:31:04,500] {logging_mixin.py:109} INFO - [2021-12-13 21:31:04,500] {dagbag.py:500} INFO - Filling up the DagBag from /opt/airflow/dags/example_postgres.py
+[2021-12-13 21:31:04,533] {processor.py:637} INFO - DAG(s) dict_keys(['postgres_operator_dag']) retrieved from /opt/airflow/dags/example_postgres.py
+[2021-12-13 21:31:04,543] {logging_mixin.py:109} INFO - [2021-12-13 21:31:04,542] {dag.py:2396} INFO - Sync 1 DAGs
+[2021-12-13 21:31:04,558] {logging_mixin.py:109} INFO - [2021-12-13 21:31:04,558] {dag.py:2928} INFO - Setting next_dagrun for postgres_operator_dag to None
+[2021-12-13 21:31:04,565] {processor.py:171} INFO - Processing /opt/airflow/dags/example_postgres.py took 0.071 seconds
+[2021-12-13 21:31:34,657] {processor.py:163} INFO - Started process (PID=6512) to work on /opt/airflow/dags/example_postgres.py
+[2021-12-13 21:31:34,659] {processor.py:625} INFO - Processing file /opt/airflow/dags/example_postgres.py for tasks to queue
+[2021-12-13 21:31:34,660] {logging_mixin.py:109} INFO - [2021-12-13 21:31:34,660] {dagbag.py:500} INFO - Filling up the DagBag from /opt/airflow/dags/example_postgres.py
+[2021-12-13 21:31:34,699] {processor.py:637} INFO - DAG(s) dict_keys(['postgres_operator_dag']) retrieved from /opt/airflow/dags/example_postgres.py
+[2021-12-13 21:31:34,708] {logging_mixin.py:109} INFO - [2021-12-13 21:31:34,708] {dag.py:2396} INFO - Sync 1 DAGs
+[2021-12-13 21:31:34,724] {logging_mixin.py:109} INFO - [2021-12-13 21:31:34,724] {dag.py:2928} INFO - Setting next_dagrun for postgres_operator_dag to None
+[2021-12-13 21:31:34,733] {processor.py:171} INFO - Processing /opt/airflow/dags/example_postgres.py took 0.080 seconds
