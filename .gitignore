@@ -1,0 +1,3 @@
+db-volumes/**
+#logs/**
+dags/__pycache__/**
