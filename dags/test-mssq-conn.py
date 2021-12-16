@@ -23,6 +23,7 @@ def test_db(**context):
                     port="1433") as conn:
                     df = pd.read_sql("SELECT table_name FROM information_schema.tables", conn)
                     print(df)
+                    return df
 
 with DAG(
     'run_test_db', 
