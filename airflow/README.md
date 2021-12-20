@@ -1,0 +1,1 @@
+I've had to change the permission of /logs ("chmod -R 777 logs/"), since I'm facing permission denied for /opt/airflow/logs/scheduler. 

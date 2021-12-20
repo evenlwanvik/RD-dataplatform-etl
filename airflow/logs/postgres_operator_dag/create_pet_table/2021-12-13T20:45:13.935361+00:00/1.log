@@ -1,0 +1,31 @@
+[2021-12-13 20:45:14,252] {taskinstance.py:1035} INFO - Dependencies all met for <TaskInstance: postgres_operator_dag.create_pet_table manual__2021-12-13T20:45:13.935361+00:00 [queued]>
+[2021-12-13 20:45:14,264] {taskinstance.py:1035} INFO - Dependencies all met for <TaskInstance: postgres_operator_dag.create_pet_table manual__2021-12-13T20:45:13.935361+00:00 [queued]>
+[2021-12-13 20:45:14,264] {taskinstance.py:1241} INFO - 
+--------------------------------------------------------------------------------
+[2021-12-13 20:45:14,264] {taskinstance.py:1242} INFO - Starting attempt 1 of 1
+[2021-12-13 20:45:14,265] {taskinstance.py:1243} INFO - 
+--------------------------------------------------------------------------------
+[2021-12-13 20:45:14,278] {taskinstance.py:1262} INFO - Executing <Task(PostgresOperator): create_pet_table> on 2021-12-13 20:45:13.935361+00:00
+[2021-12-13 20:45:14,284] {standard_task_runner.py:52} INFO - Started process 3786 to run task
+[2021-12-13 20:45:14,288] {standard_task_runner.py:76} INFO - Running: ['***', 'tasks', 'run', 'postgres_operator_dag', 'create_pet_table', 'manual__2021-12-13T20:45:13.935361+00:00', '--job-id', '21', '--raw', '--subdir', 'DAGS_FOLDER/example_postgres.py', '--cfg-path', '/tmp/tmp030cf6k2', '--error-file', '/tmp/tmpwoapeh2d']
+[2021-12-13 20:45:14,288] {standard_task_runner.py:77} INFO - Job 21: Subtask create_pet_table
+[2021-12-13 20:45:14,328] {logging_mixin.py:109} INFO - Running <TaskInstance: postgres_operator_dag.create_pet_table manual__2021-12-13T20:45:13.935361+00:00 [running]> on host ef07609851a1
+[2021-12-13 20:45:14,384] {taskinstance.py:1429} INFO - Exporting the following env vars:
+AIRFLOW_CTX_DAG_OWNER=***
+AIRFLOW_CTX_DAG_ID=postgres_operator_dag
+AIRFLOW_CTX_TASK_ID=create_pet_table
+AIRFLOW_CTX_EXECUTION_DATE=2021-12-13T20:45:13.935361+00:00
+AIRFLOW_CTX_DAG_RUN_ID=manual__2021-12-13T20:45:13.935361+00:00
+[2021-12-13 20:45:14,394] {base.py:79} INFO - Using connection to: id: postgres_***_db. Host: postgres-***, Port: 5432, Schema: , Login: ***, Password: ***, extra: {}
+[2021-12-13 20:45:14,398] {dbapi.py:225} INFO - Running statement: -- create hello_world_table
+DROP TABLE IF EXISTS pet;
+CREATE TABLE pet (
+    pet_id SERIAL PRIMARY KEY,
+    name VARCHAR NOT NULL,
+    pet_type VARCHAR NOT NULL,
+    birth_date DATE NOT NULL,
+    OWNER VARCHAR NOT NULL
+    );, parameters: None
+[2021-12-13 20:45:14,424] {taskinstance.py:1280} INFO - Marking task as SUCCESS. dag_id=postgres_operator_dag, task_id=create_pet_table, execution_date=20211213T204513, start_date=20211213T204514, end_date=20211213T204514
+[2021-12-13 20:45:14,459] {local_task_job.py:154} INFO - Task exited with return code 0
+[2021-12-13 20:45:14,499] {local_task_job.py:264} INFO - 1 downstream tasks scheduled from follow-on schedule check

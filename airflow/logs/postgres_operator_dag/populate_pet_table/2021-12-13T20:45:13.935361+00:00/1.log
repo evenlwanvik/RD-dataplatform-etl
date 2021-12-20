@@ -1,0 +1,32 @@
+[2021-12-13 20:45:15,451] {taskinstance.py:1035} INFO - Dependencies all met for <TaskInstance: postgres_operator_dag.populate_pet_table manual__2021-12-13T20:45:13.935361+00:00 [queued]>
+[2021-12-13 20:45:15,461] {taskinstance.py:1035} INFO - Dependencies all met for <TaskInstance: postgres_operator_dag.populate_pet_table manual__2021-12-13T20:45:13.935361+00:00 [queued]>
+[2021-12-13 20:45:15,462] {taskinstance.py:1241} INFO - 
+--------------------------------------------------------------------------------
+[2021-12-13 20:45:15,462] {taskinstance.py:1242} INFO - Starting attempt 1 of 1
+[2021-12-13 20:45:15,462] {taskinstance.py:1243} INFO - 
+--------------------------------------------------------------------------------
+[2021-12-13 20:45:15,473] {taskinstance.py:1262} INFO - Executing <Task(PostgresOperator): populate_pet_table> on 2021-12-13 20:45:13.935361+00:00
+[2021-12-13 20:45:15,478] {standard_task_runner.py:52} INFO - Started process 3788 to run task
+[2021-12-13 20:45:15,482] {standard_task_runner.py:76} INFO - Running: ['***', 'tasks', 'run', 'postgres_operator_dag', 'populate_pet_table', 'manual__2021-12-13T20:45:13.935361+00:00', '--job-id', '22', '--raw', '--subdir', 'DAGS_FOLDER/example_postgres.py', '--cfg-path', '/tmp/tmpo4a5rv4y', '--error-file', '/tmp/tmplubbwaqy']
+[2021-12-13 20:45:15,483] {standard_task_runner.py:77} INFO - Job 22: Subtask populate_pet_table
+[2021-12-13 20:45:15,523] {logging_mixin.py:109} INFO - Running <TaskInstance: postgres_operator_dag.populate_pet_table manual__2021-12-13T20:45:13.935361+00:00 [running]> on host ef07609851a1
+[2021-12-13 20:45:15,574] {taskinstance.py:1429} INFO - Exporting the following env vars:
+AIRFLOW_CTX_DAG_OWNER=***
+AIRFLOW_CTX_DAG_ID=postgres_operator_dag
+AIRFLOW_CTX_TASK_ID=populate_pet_table
+AIRFLOW_CTX_EXECUTION_DATE=2021-12-13T20:45:13.935361+00:00
+AIRFLOW_CTX_DAG_RUN_ID=manual__2021-12-13T20:45:13.935361+00:00
+[2021-12-13 20:45:15,583] {base.py:79} INFO - Using connection to: id: postgres_***_db. Host: postgres-***, Port: 5432, Schema: , Login: ***, Password: ***, extra: {}
+[2021-12-13 20:45:15,586] {dbapi.py:225} INFO - Running statement: -- populate pet table
+INSERT INTO pet (name, pet_type, birth_date, OWNER)
+VALUES ( 'Max', 'Dog', '2018-07-05', 'Jane');
+INSERT INTO pet (name, pet_type, birth_date, OWNER)
+VALUES ( 'Susie', 'Cat', '2019-05-01', 'Phil');
+INSERT INTO pet (name, pet_type, birth_date, OWNER)
+VALUES ( 'Lester', 'Hamster', '2020-06-23', 'Lily');
+INSERT INTO pet (name, pet_type, birth_date, OWNER)
+VALUES ( 'Quincy', 'Parrot', '2013-08-11', 'Anne');, parameters: None
+[2021-12-13 20:45:15,588] {dbapi.py:233} INFO - Rows affected: 1
+[2021-12-13 20:45:15,600] {taskinstance.py:1280} INFO - Marking task as SUCCESS. dag_id=postgres_operator_dag, task_id=populate_pet_table, execution_date=20211213T204513, start_date=20211213T204515, end_date=20211213T204515
+[2021-12-13 20:45:15,654] {local_task_job.py:154} INFO - Task exited with return code 0
+[2021-12-13 20:45:15,687] {local_task_job.py:264} INFO - 1 downstream tasks scheduled from follow-on schedule check

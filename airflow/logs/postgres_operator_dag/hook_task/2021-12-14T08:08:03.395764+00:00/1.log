@@ -1,0 +1,27 @@
+[2021-12-14 08:08:06,634] {taskinstance.py:1035} INFO - Dependencies all met for <TaskInstance: postgres_operator_dag.hook_task manual__2021-12-14T08:08:03.395764+00:00 [queued]>
+[2021-12-14 08:08:06,644] {taskinstance.py:1035} INFO - Dependencies all met for <TaskInstance: postgres_operator_dag.hook_task manual__2021-12-14T08:08:03.395764+00:00 [queued]>
+[2021-12-14 08:08:06,645] {taskinstance.py:1241} INFO - 
+--------------------------------------------------------------------------------
+[2021-12-14 08:08:06,645] {taskinstance.py:1242} INFO - Starting attempt 1 of 1
+[2021-12-14 08:08:06,645] {taskinstance.py:1243} INFO - 
+--------------------------------------------------------------------------------
+[2021-12-14 08:08:06,656] {taskinstance.py:1262} INFO - Executing <Task(PythonOperator): hook_task> on 2021-12-14 08:08:03.395764+00:00
+[2021-12-14 08:08:06,661] {standard_task_runner.py:52} INFO - Started process 919 to run task
+[2021-12-14 08:08:06,665] {standard_task_runner.py:76} INFO - Running: ['***', 'tasks', 'run', 'postgres_operator_dag', 'hook_task', 'manual__2021-12-14T08:08:03.395764+00:00', '--job-id', '32', '--raw', '--subdir', 'DAGS_FOLDER/pets_dag.py', '--cfg-path', '/tmp/tmprw47lbln', '--error-file', '/tmp/tmpdiwxnmgw']
+[2021-12-14 08:08:06,666] {standard_task_runner.py:77} INFO - Job 32: Subtask hook_task
+[2021-12-14 08:08:06,707] {logging_mixin.py:109} INFO - Running <TaskInstance: postgres_operator_dag.hook_task manual__2021-12-14T08:08:03.395764+00:00 [running]> on host 4ee0ea791fc7
+[2021-12-14 08:08:06,766] {taskinstance.py:1429} INFO - Exporting the following env vars:
+AIRFLOW_CTX_DAG_OWNER=***
+AIRFLOW_CTX_DAG_ID=postgres_operator_dag
+AIRFLOW_CTX_TASK_ID=hook_task
+AIRFLOW_CTX_EXECUTION_DATE=2021-12-14T08:08:03.395764+00:00
+AIRFLOW_CTX_DAG_RUN_ID=manual__2021-12-14T08:08:03.395764+00:00
+[2021-12-14 08:08:06,776] {base.py:79} INFO - Using connection to: id: ***_conn_id. Host: postgres-***, Port: 5432, Schema: , Login: ***, Password: ***, extra: {}
+[2021-12-14 08:08:06,781] {logging_mixin.py:109} INFO - Id: 1, Name: Max, pet-type: Dog, birth-date: 2018-07-05, owner: Jane
+[2021-12-14 08:08:06,781] {logging_mixin.py:109} INFO - Id: 2, Name: Susie, pet-type: Cat, birth-date: 2019-05-01, owner: Phil
+[2021-12-14 08:08:06,781] {logging_mixin.py:109} INFO - Id: 3, Name: Lester, pet-type: Hamster, birth-date: 2020-06-23, owner: Lily
+[2021-12-14 08:08:06,781] {logging_mixin.py:109} INFO - Id: 4, Name: Quincy, pet-type: Parrot, birth-date: 2013-08-11, owner: Anne
+[2021-12-14 08:08:06,781] {python.py:152} INFO - Done. Returned value was: [(1, 'Max', 'Dog', datetime.date(2018, 7, 5), 'Jane'), (2, 'Susie', 'Cat', datetime.date(2019, 5, 1), 'Phil'), (3, 'Lester', 'Hamster', datetime.date(2020, 6, 23), 'Lily'), (4, 'Quincy', 'Parrot', datetime.date(2013, 8, 11), 'Anne')]
+[2021-12-14 08:08:06,804] {taskinstance.py:1280} INFO - Marking task as SUCCESS. dag_id=postgres_operator_dag, task_id=hook_task, execution_date=20211214T080803, start_date=20211214T080806, end_date=20211214T080806
+[2021-12-14 08:08:06,837] {local_task_job.py:154} INFO - Task exited with return code 0
+[2021-12-14 08:08:06,869] {local_task_job.py:264} INFO - 0 downstream tasks scheduled from follow-on schedule check

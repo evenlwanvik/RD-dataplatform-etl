@@ -44,7 +44,8 @@ x-airflow-common:
   # In order to add custom dependencies or upgrade provider packages you can use your extended image.
   # Comment the image line, place your Dockerfile in the directory where you placed the docker-compose.yaml
   # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
-  build: .
+  build: 
+    context: ./airflow
   image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.2.2}
   environment:
     &airflow-common-env
@@ -59,9 +60,9 @@ x-airflow-common:
     AIRFLOW__CORE__ENABLE_XCOM_PICKLING: 'true' # måtte legge til denne da datetime ikke var "serializable"
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
   volumes:
-    - ./dags:/opt/airflow/dags
-    - ./logs:/opt/airflow/logs
-    - ./plugins:/opt/airflow/plugins
+    - ./airflow/dags:/opt/airflow/dags
+    - ./airflow/logs:/opt/airflow/logs
+    - ./airflow/plugins:/opt/airflow/plugins
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
@@ -78,7 +79,7 @@ services:
       POSTGRES_PASSWORD: airflow
       POSTGRES_DB: airflow
     volumes:
-      - ./db-volumes/postgres-airflowbackend-volume/:/var/lib/postgresql-airflow/data
+      - ./db-volumes/:/var/lib/postgresql-airflow/data
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 5s
@@ -266,17 +267,18 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-  
-  postgres-datastorage:
-    image: postgres:13
-    environment:
-      POSTGRES_USER: datastorage
-      POSTGRES_PASSWORD: datastorage
-      POSTGRES_DB: datastorage
-    volumes:
-      - ./db-volumes/postgres-datastorage-volume/:/var/lib/postgresql-datastorage/data
+
+  mssql:
+    build:
+      context: ./mssql
+      dockerfile: Dockerfile
     ports:
-      - "8001:5432"
-    restart: always
+      - "8002:1433"
 
-
+  jupyter-notebooks:
+    build:
+      context: ./notebooks
+    ports:
+      - "8001:8888"
+    depends_on:
+      - mssql

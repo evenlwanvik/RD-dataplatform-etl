@@ -1,0 +1,17 @@
+# ipython-sql enables the use of SQL magic functions that contain % and %% , 
+# allowing you to write SQL style code right in Jupyter Notebook.
+ipython-sql
+# sqlalchemy SQL toolkit and object-relational-mapper for Python
+# Here it will mainly be used to store SQL queries into a pandas dataframe.
+sqlalchemy
+# Psycopg is the most popular PostgreSQL database adapter for Python
+#psycopg2
+psycopg2-binary
+
+# Microsoft sql server python module
+pymssql
+
+pandas
+matplotlib
+
+jupyter
