@@ -16,11 +16,10 @@ default_args = {
 }
 
 def test_db(**context):
-    with pymssql.connect(server="172.17.0.1",
-                    user="SA",
+    with pymssql.connect(server="mssql",
+                    user="sa",
                     password="Valhalla06978!",
-                    database="AdventureWorksLT2019",
-                    port="1433") as conn:
+                    database="AdventureWorks2019") as conn:
                     df = pd.read_sql("SELECT table_name FROM information_schema.tables", conn)
                     print(df)
                     return df
