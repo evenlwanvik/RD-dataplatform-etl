@@ -6,6 +6,9 @@ from airflow.operators.python_operator import PythonOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 
 
+# This code is obsolete, as we've migrated from postgres to mssql db,
+# however, it will stay as I will want to test similar code in the near future.
+
 def get_all_pets():
     request = "SELECT * FROM pet;"
     pg_hook = PostgresHook(postgres_conn_id="datastorage_conn_id")

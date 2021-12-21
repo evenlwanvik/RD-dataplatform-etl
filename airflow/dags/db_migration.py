@@ -5,6 +5,9 @@ from airflow.hooks.postgres_hook import PostgresHook
 from airflow.operators.python_operator import PythonOperator
 from airflow.hooks.mssql_hook import MsSqlHook
 
+# This is simply a test for migrating an external db to our mssql db running
+# in a container in our docker-compose network.
+
 dag_params = {
     'dag_id': 'postgres_yugabyte_migration',
     'start_date':datetime(2021, 12, 16),
@@ -12,15 +15,15 @@ dag_params = {
 }
 
 with DAG(**dag_params) as dag:
-    # Get connections to source (mssql) and destination (postgresql)
+    # Get connections to source (local mssql) and destination (mssql container)
     src = MsSqlHook(server="172.17.0.1",
-                    user="SA",
+                    user="sa",
                     password="Valhalla06978!",
                     database="AdventureWorksLT2019",
                     port="1433")
-    dest = PostgresHook(server="postgres-datastorage",
-                    user="datastorage",
-                    password="datastorage")
+    dest = PostgresHook(server="mssql",
+                    user="sa",
+                    password="Valhalla06978!")
     src_conn = src.get_conn()
     src_cursor = src_conn.cursor()
     dest_conn = dest.get_conn()
