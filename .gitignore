@@ -1,4 +1,8 @@
-airflow/db-volumes/**
-#airflow/logs/**
 **__pycache__/
+
+# Airflow
+airflow/db-volumes/**
+airflow/logs/**
+
+# MSSQL
 mssql/*.bak
