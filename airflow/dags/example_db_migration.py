@@ -14,7 +14,7 @@ dag_params = {
     'schedule_interval': timedelta(minutes=1)
 }
 
-with DAG(**dag_params) as dag:
+with DAG(tags=["example", "test"], **dag_params) as dag:
     # Get connections to source (local mssql) and destination (mssql container)
     src = MsSqlHook(server="172.17.0.1",
                     user="sa",

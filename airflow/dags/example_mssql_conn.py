@@ -28,7 +28,7 @@ with DAG(
     'run_test_db', 
     default_args=default_args, 
     schedule_interval=None,
-    tags=["test"]
+    tags=["example", "test"]
 ) as dag:
     test_database = PythonOperator(
         task_id='test_database',

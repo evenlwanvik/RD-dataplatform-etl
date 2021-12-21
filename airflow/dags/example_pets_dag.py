@@ -40,7 +40,7 @@ with DAG(
     start_date=datetime.datetime(2021, 12, 13),
     schedule_interval=None,
     catchup=False,
-    tags=['example'],
+    tags=["example", "test"]
 ) as dag:
     create_pet_table = PostgresOperator(
         task_id="create_pet_table",
