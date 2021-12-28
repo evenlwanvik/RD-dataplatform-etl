@@ -47,6 +47,8 @@ services:
       interval: 5s
       retries: 5
     restart: always
+    ports:
+      - 8001:8080
 
   redis:
     image: redis:latest
@@ -217,7 +219,7 @@ services:
     <<: *airflow-common
     command: celery flower
     ports:
-      - 5555:5555
+      - 8002:5555
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:5555/"]
       interval: 10s
@@ -234,7 +236,7 @@ services:
       context: ./notebooks
       dockerfile: Dockerfile
     ports:
-      - "8001:8888"
+      - "8010:8888"
     depends_on:
       - mssql
 
@@ -243,7 +245,8 @@ services:
       context: ./mssql
       dockerfile: Dockerfile
     ports:
-      - "8002:1433"
+      - "8011:1433"
+    
 
 
 
