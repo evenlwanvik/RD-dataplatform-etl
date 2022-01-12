@@ -6,3 +6,7 @@ airflow/logs/**
 
 # MSSQL
 mssql/*.bak
+mssql/db-data/
+
+# Postgres DB
+pgdb/db-data/

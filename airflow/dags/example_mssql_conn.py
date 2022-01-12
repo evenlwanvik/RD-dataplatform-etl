@@ -16,13 +16,14 @@ default_args = {
 }
 
 def test_db(**context):
-    with pymssql.connect(server="mssql",
-                    user="sa",
-                    password="Valhalla06978!",
-                    database="AdventureWorks2019") as conn:
+    #with pymssql.connect(server="mssql",
+    #                user="sa",
+    #                password="Valhalla06978!",
+    #                database="AdventureWorks2019") as conn:
+    with MsSqlHook(mssql_conn_id="mssql_conn_id").get_conn() as conn:
                     df = pd.read_sql("SELECT table_name FROM information_schema.tables", conn)
                     print(df)
-                    return df
+                    #return df
 
 with DAG(
     'run_test_db', 

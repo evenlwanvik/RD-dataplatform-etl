@@ -9,6 +9,3 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 USER airflow
 
-# Install custom Python packages
-RUN pip install --no-cache-dir --user apache-airflow-providers-microsoft-mssql
-
