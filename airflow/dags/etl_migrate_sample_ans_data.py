@@ -43,6 +43,29 @@ def etl():
     dest_mssql_engine.dispose()
     dest_postgres_engine.dispose()
 
+def update_database():
+    # Sqlalchemy engines and connecitons
+    src_engine = sqlalchemy.create_engine(src_mssql_conn_uri)
+    dest_mssql_engine = sqlalchemy.create_engine(dest_mssql_conn_uri)
+    dest_postgres_engine = sqlalchemy.create_engine(dest_postgres_conn_uri)
+    src_conn = src_engine.connect()
+    dest_mssql_conn = dest_mssql_engine.connect()
+    dest_postgres_conn = dest_postgres_engine.connect()
+
+    # Get cursor
+    src_cursor = src_engine.raw_connection().cursor()
+    src_cursor.execute("SELECT MAX(product_id) FROM products;")
+    id = src_cursor.fetchone()[0]
+    print(id)
+
+    # Close connections and dispose engines
+    src_conn.close()
+    dest_mssql_conn.close()
+    dest_postgres_conn.close()
+    src_engine.dispose()
+    dest_mssql_engine.dispose()
+    dest_postgres_engine.dispose()
+
 with DAG(
     dag_id='etl_migrate_sample_ans_data',
     start_date=datetime(2022, 1, 10),
@@ -52,3 +75,4 @@ with DAG(
 ) as dag:
 
     etl_remove_sensitive_data_task = PythonOperator(task_id="etl_remove_sensitive_data", python_callable=etl)
+    update_database_task = PythonOperator(task_id="update_database", python_callable=update_database)
