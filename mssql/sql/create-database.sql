@@ -1,0 +1,1 @@
+CREATE DATABASE avstemning_sap_data;

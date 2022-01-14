@@ -247,6 +247,8 @@ services:
     #logging:
     #  driver: none
     restart: unless-stopped
+    #volumes:
+    #  - ./db-data/:/var/opt/mssql/data
     ports:
       - "8011:1433"
 

@@ -7,7 +7,13 @@ airflow/logs/**
 # MSSQL
 mssql/*.bak
 mssql/db-data/
+mssql/custom-data/
+mssql/backups/
 mssql-2/db-data/
+
 
 # Postgres DB
 pgdb/db-data/
+
+# Data used for local testing
+data/*

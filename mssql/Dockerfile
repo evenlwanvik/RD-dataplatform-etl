@@ -5,13 +5,15 @@ ENV ACCEPT_EULA=Y
 
 USER mssql
 
-COPY restore-adventureworks-db.sql restore-ans-testdata-db.sql /tmp/
-COPY AdventureWorks2019.bak ans_testdata-2022112-10-35-22.bak /var/opt/mssql/backup/
+COPY sql/ /tmp/
+COPY backups/ /var/opt/mssql/backup/
+COPY custom-data/ /var/opt/mssql/custom-data/
 
 # Launch SQL Server, confirm startup is complete, restore the database, then terminate SQL Server.
 RUN ( /opt/mssql/bin/sqlservr & ) | grep -q "Service Broker manager has started" \
+    #&& /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P ${SA_PASSWORD} -i /tmp/create-database.sql \
+    && /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P ${SA_PASSWORD} -i /tmp/restore-sap-testdata-db.sql \
     && /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P ${SA_PASSWORD} -i /tmp/restore-adventureworks-db.sql \
-    && /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P ${SA_PASSWORD} -i /tmp/restore-ans-testdata-db.sql \
     && pkill sqlservr
 
 CMD ["/opt/mssql/bin/sqlservr"]
