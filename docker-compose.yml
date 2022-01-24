@@ -19,6 +19,7 @@ x-airflow-common:
     AIRFLOW__API__AUTH_BACKEND: 'airflow.api.auth.backend.basic_auth'
     AIRFLOW__CORE__ENABLE_XCOM_PICKLING: 'true' # måtte legge til denne da datetime ikke var "serializable"
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
+    AIRFLOW_HOME: ./airflow
   env_file:
     - ./airflow/env/custom_connections.env
   volumes:
