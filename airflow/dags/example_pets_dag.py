@@ -20,20 +20,6 @@ def get_all_pets():
         print("Id: {0}, Name: {1}, pet-type: {2}, birth-date: {3}, owner: {4}".format(source[0], source[1], source[2], source[3], source[4]))
     return sources
 
-#[(1, 'Max', 'Dog', datetime.date(2018, 7, 5), 'Jane'), (2, 'Susie', 'Cat', datetime.date(2019, 5, 1), 'Phil'), (3, 'Lester', 'Hamster', datetime.date(2020, 6, 23), 'Lily'), (4, 'Quincy', 'Parrot', datetime.date(2013, 8, 11), 'Anne')]
-
-'''
-def get_birth_date():
-    request = "sql/pets_example/fetch_birth_date.sql"
-    params = {'begin_date': '2020-01-01', 'end_date': '2020-12-31'}
-    pg_hook = PostgresHook(postgres_conn_id="datastorage_conn_id")
-    connection = pg_hook.get_conn()
-    cursor = connection.cursor()
-    cursor.execute(request, params)
-    sources = cursor.fetchall() # cursor (table pointer) fetch all data from executed request
-    print(sources)
-    return sources  
-'''
 
 with DAG(
     dag_id="pets_dag",
