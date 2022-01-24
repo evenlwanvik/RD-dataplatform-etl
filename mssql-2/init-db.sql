@@ -1,1 +1,1 @@
-CREATE DATABASE ans_testdata;
+CREATE DATABASE testdata;

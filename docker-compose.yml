@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 x-airflow-common:
   &airflow-common
   # In order to add custom dependencies or upgrade provider packages you can use your extended image.
@@ -6,7 +6,7 @@ x-airflow-common:
   # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
   build: 
     context: ./airflow
-  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.2.2}
+  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.2.3-python3.8}
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
@@ -18,7 +18,7 @@ x-airflow-common:
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKEND: 'airflow.api.auth.backend.basic_auth'
     AIRFLOW__CORE__ENABLE_XCOM_PICKLING: 'true' # måtte legge til denne da datetime ikke var "serializable"
-    _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:- apache-airflow-providers-microsoft-mssql}
+    _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:- apache-airflow-providers-microsoft-mssql apache-airflow-providers-apache-hive sasl thrift thrift-sasl PyHive}
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs
@@ -268,7 +268,7 @@ services:
   pgdb:
     image: postgres:14-alpine
     environment:
-      POSTGRES_DB: ans_testdata
+      POSTGRES_DB: testdata
       POSTGRES_USER: testdb
       POSTGRES_PASSWORD: testdb
     #logging:
