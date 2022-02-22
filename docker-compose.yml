@@ -231,50 +231,53 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
-  jupyter:
-    build:
-      context: ./notebooks
-      dockerfile: Dockerfile
-    ports:
-      - "8010:8888"
-    depends_on:
-      - mssql
+#  jupyter:
+#    build:
+#      context: ./notebooks
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8010:8888"
+#    depends_on:
+#      - mssql
 
-  mssql:
-    build:
-      context: ./mssql
-      dockerfile: Dockerfile
+#  mssql:
+#    build:
+#      context: ./mssql
+#      dockerfile: Dockerfile
+#    environment:
+#      SA_PASSWORD: "Valhalla06978!"
+#      ACCEPT_EULA: "Y"
+#    #logging:
+#    #  driver: none
+#    restart: unless-stopped
+#    #volumes:
+#    #  - ./mssql/db-data/:/var/opt/mssql/data
+#    ports:
+#      - "8011:1433"
+
+#  mssql-2:
+#    build:
+#      context: ./mssql-2
+#      dockerfile: Dockerfile
+#    environment:
+#      SA_PASSWORD: "Valhalla06978!"
+#      ACCEPT_EULA: "Y"
     #logging:
     #  driver: none
-    restart: unless-stopped
-    #volumes:
-    #  - ./mssql/db-data/:/var/opt/mssql/data
-    ports:
-      - "8011:1433"
+#    restart: unless-stopped
+#    ports:
+#      - "8012:1433"
 
-  mssql-2:
-    build:
-      context: ./mssql-2
-      dockerfile: Dockerfile
-    environment:
-      SA_PASSWORD: "Valhalla06978!"
-      ACCEPT_EULA: "Y"
-    #logging:
-    #  driver: none
-    restart: unless-stopped
-    ports:
-      - "8012:1433"
-
-  pgdb:
-    image: postgres:14-alpine
-    environment:
-      POSTGRES_DB: testdata
-      POSTGRES_USER: testdb
-      POSTGRES_PASSWORD: testdb
+#  pgdb:
+#    image: postgres:14-alpine
+#    environment:
+#      POSTGRES_DB: testdata
+#      POSTGRES_USER: testdb
+#      POSTGRES_PASSWORD: testdb
     #logging:
     #  driver: none
     #restart: unless-stopped
     #volumes:
     #  - ./pgdb/db-data:/var/lib/postgresql/data
-    ports:
-      - 8013:5432
+#    ports:
+#      - 8013:5432

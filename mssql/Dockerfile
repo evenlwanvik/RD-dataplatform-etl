@@ -5,15 +5,18 @@ ENV ACCEPT_EULA=Y
 
 USER mssql
 
-COPY sql/ /tmp/
-COPY backups/ /var/opt/mssql/backup/
-COPY custom-data/ /var/opt/mssql/custom-data/
+COPY sql/init-db.sql /tmp/
 
 # Launch SQL Server, confirm startup is complete, restore the database, then terminate SQL Server.
 RUN ( /opt/mssql/bin/sqlservr & ) | grep -q "Service Broker manager has started" \
-    #&& /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P ${SA_PASSWORD} -i /tmp/create-database.sql \
-    && /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P ${SA_PASSWORD} -i /tmp/restore-sap-testdata-db.sql \
-    && /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P ${SA_PASSWORD} -i /tmp/restore-adventureworks-db.sql \
+    && /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P ${SA_PASSWORD} -i /tmp/init-db.sql \
     && pkill sqlservr
+
+# Launch SQL Server, confirm startup is complete, restore the database, then terminate SQL Server.
+#RUN ( /opt/mssql/bin/sqlservr & ) | grep -q "Service Broker manager has started" \
+    #&& /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P ${SA_PASSWORD} -i /tmp/create-database.sql \
+    #&& /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P ${SA_PASSWORD} -i /tmp/restore-sap-testdata-db.sql \
+    #&& /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P ${SA_PASSWORD} -i /tmp/restore-adventureworks-db.sql \
+    #&& pkill sqlservr
 
 CMD ["/opt/mssql/bin/sqlservr"]
