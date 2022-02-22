@@ -1,19 +1,15 @@
 **__pycache__/
 
+# Local persistant db storage
+**db-volumes
+
 # Airflow
-airflow/db-volumes/**
-airflow/logs/**
+logs/
 
 # MSSQL
-mssql/*.bak
-mssql/db-data/
-mssql/custom-data/
-mssql/backups/
-mssql-2/db-data/
-
-
-# Postgres DB
-pgdb/db-data/
+services/mssql/*.bak
+services/mssql/custom-data/
+services/mssql/backups/
 
 # Data used for local testing
 data/*
