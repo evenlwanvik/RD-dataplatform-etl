@@ -11,7 +11,7 @@ Airflow is run within several docker services within the docker-compose system. 
 * **./logs** - Airflow writes logs for tasks in a way that allows to see logs for each task run.
 * **./plugins** - Contains our custom plugins. Using Airflow plugins can be a way to customize the Airflow installation to reflect our ecosystem.
 
-### **Containers**
+### **Airflow compponents**
 
 * **airflow-scheduler** - The scheduler monitors all tasks and DAGs, then triggers the task instances once their dependencies are complete.
 * **airflow-webserver** - Front end GUI provided to end users at http://localhost:8000.
@@ -22,13 +22,29 @@ Airflow is run within several docker services within the docker-compose system. 
 * **redis** - The redis-broker that forwards messages from scheduler to worker.
 
 
+### Common errors:
+---
+If you get an error:
+```
+PermissionError: [Errno 13] Permission denied: '/opt/airflow/logs/scheduler'
+```
+it can be caused by ht biund mount, e.g.,:
+```
+   service_name:
+     ...
+     volumes:
+      - ./airflow/logs:/opt/airflow/logs
+```
+Fix it by granting permission to the local logs folder, so that airflow container can write logs:
+```
+chmod -R 777 airflow/logs/
+```
+
 ## **Jupyter Notebook**
 ---
 
 A jupyter notebook container is used as the first stage analytics environment, in which we can run tests on the AdventureWorks database stored in the mssql container. 
 
-### **Container**
- 
 When the server starts, i.e., the `jupyter` container, you'll get a notification that the notebooks web server can be reached from, e.g.:
 ```
 localhost:8888/?token=2e12afd535c6bed4381fd95bc0cc834573f5b55a78b074da
@@ -52,26 +68,3 @@ A Microsoft SQL Server is used as the final procedure, `load`, of the ETL proces
 The AdventureWorks backup file is loaded upon building the container, and can be used for testing the analytics software. 
 
 To read the content and test the connection to the AdventureWorks db, you can either connect to it through the python mssql interface module shown in `./notebooks/notebooks/AdventureWorks_example.ipynb`, through the connections used in `./airflow/dags/example_mssql_conn.py`, or with Azure Data Studio through localhost and port 8002.
-
-## **Tableau-server**
----
-Tableau is a visual analytics engine that makes it easier to create interactive visual analytics in the form of dashboards. These dashboards make it easier for non-technical analysts and end user to convert data into udnerstandable, interactive graphics. 
-
-Tableau recently released a container-based server, which we, in the near future, will implement alongside our current docker-compose configuration. The image used runs an entire self-contained Tableau Server Application.
-## Common errors:
----
-If you get an error:
-```
-PermissionError: [Errno 13] Permission denied: '/opt/airflow/logs/scheduler'
-```
-it can be caused by ht biund mount, e.g.,:
-```
-   service_name:
-     ...
-     volumes:
-      - ./airflow/logs:/opt/airflow/logs
-```
-Fix it by granting permission to the local logs folder, so that airflow container can write logs:
-```
-chmod -R 777 airflow/logs/
-```
