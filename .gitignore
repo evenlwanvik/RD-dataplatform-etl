@@ -13,3 +13,5 @@ services/mssql/backups/
 
 # Data used for local testing
 data/*
+
+.env

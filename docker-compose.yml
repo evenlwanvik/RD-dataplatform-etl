@@ -6,7 +6,13 @@ x-airflow-common:
   # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
   build: 
     context: ./
-  image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.2.3-python3.8}
+    args:         
+      AD_DOMAIN: ${AD_DOMAIN}
+      AD_DOMAIN_USER: ${AD_DOMAIN_USER}
+      AD_DOMAIN_PASSWORD: ${AD_DOMAIN_PASSWORD}
+  #image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.2.3-python3.8}
+  #env_file:
+  #  - ./env/credentials.env
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
@@ -18,7 +24,7 @@ x-airflow-common:
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__API__AUTH_BACKEND: 'airflow.api.auth.backend.basic_auth'
     AIRFLOW__CORE__ENABLE_XCOM_PICKLING: 'true' # had to use true as datetime wasn't "serializable"
-    _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:- apache-airflow-providers-microsoft-mssql hashlib} # apache-airflow-providers-apache-hive sasl thrift thrift-sasl PyHive}
+    _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:- apache-airflow-providers-microsoft-mssql} # apache-airflow-providers-apache-hive sasl thrift thrift-sasl PyHive}
   volumes:
     - ./dags:/opt/airflow/dags
     - ./logs:/opt/airflow/logs
@@ -240,20 +246,20 @@ services:
 #    depends_on:
 #      - mssql
 
-  mssql:
-    build:
-      context: ./services/mssql
-      dockerfile: Dockerfile
-    environment:
-      SA_PASSWORD: "Valhalla06978!"
-      ACCEPT_EULA: "Y"
-    #logging:
-    #  driver: none
-    restart: unless-stopped
-    volumes:
-      - ./services/mssql/db-volumes/:/var/opt/mssql/data
-    ports:
-      - "8010:1433"
+#  mssql:
+#    build:
+#      context: ./services/mssql
+#      dockerfile: Dockerfile
+#    environment:
+#      SA_PASSWORD: "Valhalla06978!"
+#      ACCEPT_EULA: "Y"
+#    #logging:
+#    #  driver: none
+#    restart: unless-stopped
+#    volumes:
+#      - ./services/mssql/db-volumes/:/var/opt/mssql/data
+#    ports:
+#      - "8010:1433"
 
 #  mssql-2:
 #    build:

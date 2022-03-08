@@ -1,3 +1,7 @@
 **backups
 **custom-data
 **db-volumes
+
+services/*
+
+#.env
