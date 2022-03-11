@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from airflow import DAG
+from airflow.models import Variable
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.bash_operator import BashOperator
 import pandas as pd
@@ -7,19 +8,19 @@ import sqlalchemy
 import hashlib
 from lib import (
     LOCAL_DB_CONNECTION,
-    EXTERNAL_DB_CONNECTION,
     get_most_recent_dag_run,
     mssql_server_connection,
     delete_row
 )
+
+AD_DOMAIN_PASSWORD = Variable.get("AD_DOMAIN_PASSWORD")
 
 # TODO: Replace hard-code variable
 start_date = datetime(2022, 2, 21)
 
 def migrate_delta(**kwargs):
 
-    local_table = "agltransact"
-    external_table = "agltransact"
+    table = "agltransact"
     
     local_db_conn = LOCAL_DB_CONNECTION
 
@@ -27,15 +28,15 @@ def migrate_delta(**kwargs):
         sqlalchemy.text(
             f"""
             SELECT MAX(agrtid) as last_id
-            FROM {local_table}
+            FROM {table}
             """
         )
     ).fetchall()[0][0]
 
     if last_id is None: 
-        print(f"{local_table} is empty: terminating task.")
+        print(f"{table} is empty: terminating task.")
     else: 
-        print(f"Last agrtid stored in local database table {local_table}: {last_id}.")
+        print(f"Last agrtid stored in local database table {table}: {last_id}.")
 
         print(kwargs["dag_run"])
 
@@ -46,12 +47,11 @@ def migrate_delta(**kwargs):
             last_dag_run = datetime(2022, 3, 2)
             print(f"Setting initial date to {start_date}")
  
-        #external_conn = mssql_server_connection(host="AGR-DB17.sfso.no", db="AgrHam_PK01")
+        external_conn = mssql_server_connection(host="AGR-DB17.sfso.no", db="AgrHam_PK01")
 
         query = f"""
             SELECT
                 account,
-                SUBSTRING(account, 1, 2) as acc_class,
                 dim_1,
                 dim_2,
                 client,
@@ -59,14 +59,14 @@ def migrate_delta(**kwargs):
                 trans_date,
                 agrtid,
                 last_update
-            FROM {external_table} 
+            FROM {table} 
             WHERE agrtid > {last_id}
-                OR last_update > Convert(datetime, '{last_dag_run}')
+                --OR last_update > Convert(datetime, '{last_dag_run}')
         """
-        updated_rows = pd.read_sql_query(query, con=EXTERNAL_DB_CONNECTION)
+        updated_rows = pd.read_sql_query(query, con=external_conn)
 
         if updated_rows.empty:
-            print(f"No new data from table {external_table} in source database.", flush=True)
+            print(f"No new data from table {table} in source database.", flush=True)
         else:
             # Delete rows with duplicate agrtid before insert -
             # in case new last_update with existing agrtid
@@ -76,7 +76,7 @@ def migrate_delta(**kwargs):
                 # TODO: Deleting single row is super slow, speed it up.
                 for i, agrtid in enumerate(agrtid_list):
                     print(f"{i+1}/{n_updates}\tRemoving {agrtid}")
-                    delete_row(local_db_conn, local_table, agrtid)
+                    delete_row(local_db_conn, table, agrtid)
             
             print("Adding updated rows to local db.")
 
@@ -84,13 +84,13 @@ def migrate_delta(**kwargs):
             # I doubt we ever will see more than 10000 rows updated in a table between runs though..
             if len(updated_rows) <= 10000:
                 updated_rows.to_sql(
-                    local_table, con=local_db_conn, if_exists="append", index=False)
+                    table, con=local_db_conn, if_exists="append", index=False)
             else:
                 updated_rows.to_sql(
-                    local_table, con=local_db_conn, if_exists="append", index=False, 
+                    table, con=local_db_conn, if_exists="append", index=False, 
                     chunksize=1000)
 
-            print(f"{n_updates} rows updated for table {local_table}.", flush=True)
+            print(f"{n_updates} rows updated for table {table}.", flush=True)
 
         # After we've pulled latest id's and "supposedly" updated rows 
         # we compare hash checksums of both databases.
@@ -99,7 +99,6 @@ def migrate_delta(**kwargs):
         query = f"""
             SELECT TOP(10)
                 account,
-                SUBSTRING(account, 1, 2) as acc_class,
                 dim_1,
                 dim_2,
                 client,
@@ -107,14 +106,15 @@ def migrate_delta(**kwargs):
                 trans_date,
                 agrtid,
                 last_update
-            FROM {local_table} 
+            FROM {table} 
+            where agrtid > {last_id}
+            ORDER BY agrtid DESC
         """
         local_df = pd.read_sql_query(query, con=LOCAL_DB_CONNECTION)
 
         query = f"""
-            SELECT TOP(10)
+            SELECT TOP(100)
                 account,
-                SUBSTRING(account, 1, 2) as acc_class,
                 dim_1,
                 dim_2,
                 client,
@@ -122,9 +122,11 @@ def migrate_delta(**kwargs):
                 trans_date,
                 agrtid,
                 last_update
-            FROM {local_table} 
+            FROM {table} 
+            where agrtid > {last_id}
+            ORDER BY agrtid DESC
         """
-        external_df = pd.read_sql_query(query, con=EXTERNAL_DB_CONNECTION)
+        external_df = pd.read_sql_query(query, con=external_conn)
 
         local_df_hash = hashlib.sha256(local_df.to_json().encode()).hexdigest()
         external_df_hash =hashlib.sha256(external_df.to_json().encode()).hexdigest()    
@@ -139,7 +141,7 @@ args = {
 }
 
 with DAG(
-    dag_id='agltransact_delta_v001', 
+    dag_id='agltransact_delta_v002', 
     #schedule_interval='* */1 * * *',
     schedule_interval=None,
     tags=["agltransact", "delta"], 
@@ -152,6 +154,11 @@ with DAG(
         bash_command='echo "First DAG"',
     )
 
+    kerberos_init_task = BashOperator(
+        task_id="kerberos_init", 
+        bash_command=f"echo {AD_DOMAIN_PASSWORD} | kinit",
+    )
+
     migrate_delta_task = PythonOperator(
         task_id="migrate_agltransact_delta", 
         python_callable=migrate_delta
@@ -162,4 +169,4 @@ with DAG(
         bash_command='echo "Final DAG"',
     )
 
-    first_dag_task >> migrate_delta_task >> final_dag_task
+    first_dag_task >> kerberos_init_task >> migrate_delta_task >> final_dag_task
