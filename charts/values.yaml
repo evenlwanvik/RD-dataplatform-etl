@@ -291,7 +291,13 @@ extraConfigMaps: {}
 # Extra env 'items' that will be added to the definition of airflow containers
 # a string is expected (can be templated).
 # TODO: difference from `env`? This is a templated string. Probably should template `env` and remove this.
-extraEnv: ~
+extraEnv: |
+  - name: AD_DOMAIN_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: kerberos
+        key: password
+
 # eg:
 # extraEnv: |
 #   - name: AIRFLOW__CORE__LOAD_EXAMPLES
@@ -376,7 +382,7 @@ kerberos:
   configPath: /etc/krb5.conf
   keytabBase64Content: ~
   keytabPath: /etc/airflow.keytab
-  principal: airflow@FOO.COM
+  principal: xxx@SFSO.NO
   reinitFrequency: 3600
   config: |
     # This is an example config showing how you can use templating and how "example" config
@@ -392,15 +398,15 @@ kerberos:
     admin_server = "FILE:{{ template "airflow_logs_no_quote" . }}/kadmind.log"
 
     [libdefaults]
-    default_realm = FOO.COM
+    default_realm = SFSO.NO
     ticket_lifetime = 10h
     renew_lifetime = 7d
     forwardable = true
 
     [realms]
-    FOO.COM = {
-      kdc = kdc-server.foo.com
-      admin_server = admin_server.foo.com
+    SFSO.NO = {
+      kdc = kdc-server.sfso.no
+      admin_server = admin_server.sfso.com
     }
 
 # Airflow Worker Config
@@ -1447,25 +1453,6 @@ podTemplate: ~
 #         ...
 
 dags:
-  ## the airflow dags folder
-  ##
-  path: /opt/airflow/dags
-
-  ## whether to disable pickling dags from the scheduler to workers
-  ##
-  ## NOTE:
-  ## - sets AIRFLOW__CORE__DONOT_PICKLE
-  ##
-  doNotPickle: false
-
-  ## install any Python `requirements.txt` at the root of `dags.path` automatically
-  ##
-  ## WARNING:
-  ## - if set to true, and you are using `dags.git.gitSync`, you must also enable
-  ## `dags.initContainer` to ensure the requirements.txt is available at Pod start
-  ##
-  installRequirements: true
-
   ## configs for the dags PVC
   ##
   persistence:
