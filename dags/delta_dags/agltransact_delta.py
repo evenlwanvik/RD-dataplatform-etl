@@ -13,7 +13,10 @@ from lib import (
     delete_row
 )
 
+AD_DOMAIN = Variable.get("AD_DOMAIN")
+AD_DOMAIN_USER = Variable.get("AD_DOMAIN_USER")
 AD_DOMAIN_PASSWORD = Variable.get("AD_DOMAIN_PASSWORD")
+
 
 # TODO: Replace hard-code variable
 start_date = datetime(2022, 2, 21)
@@ -129,7 +132,7 @@ def migrate_delta(**kwargs):
         external_df = pd.read_sql_query(query, con=external_conn)
 
         local_df_hash = hashlib.sha256(local_df.to_json().encode()).hexdigest()
-        external_df_hash =hashlib.sha256(external_df.to_json().encode()).hexdigest()    
+        external_df_hash = hashlib.sha256(external_df.to_json().encode()).hexdigest()    
 
         print(f"Does hashes match for TOP 10 rows: {local_df_hash==external_df_hash}", flush=True)
     
@@ -156,7 +159,7 @@ with DAG(
 
     kerberos_init_task = BashOperator(
         task_id="kerberos_init", 
-        bash_command=f"echo {AD_DOMAIN_PASSWORD} | kinit",
+        bash_command=f"echo {AD_DOMAIN_PASSWORD} | kinit {AD_DOMAIN_USER}@{AD_DOMAIN}",
     )
 
     migrate_delta_task = PythonOperator(
