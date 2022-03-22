@@ -18,24 +18,23 @@ start_date = datetime(2022, 2, 21)
 
 def migrate_delta(**kwargs):
 
-    local_table = "agltransact"
-    external_table = "agltransact"
-    
+    table_name = "agltransact"
+
     local_db_conn = LOCAL_DB_CONNECTION
 
     last_id = local_db_conn.execute(
         sqlalchemy.text(
             f"""
             SELECT MAX(agrtid) as last_id
-            FROM {local_table}
+            FROM {table_name}
             """
         )
     ).fetchall()[0][0]
 
     if last_id is None: 
-        print(f"{local_table} is empty: terminating task.")
+        print(f"{table_name} is empty: terminating task.")
     else: 
-        print(f"Last agrtid stored in local database table {local_table}: {last_id}.")
+        print(f"Last agrtid stored in local database table {table_name}: {last_id}.")
 
         print(kwargs["dag_run"])
 
@@ -46,7 +45,7 @@ def migrate_delta(**kwargs):
             last_dag_run = datetime(2022, 3, 2)
             print(f"Setting initial date to {start_date}")
  
-        #external_conn = mssql_server_connection(host="AGR-DB17.sfso.no", db="AgrHam_PK01")
+        external_conn = mssql_server_connection(host="AGR-DB17.sfso.no", db="AgrHam_PK01")
 
         query = f"""
             SELECT
@@ -59,14 +58,15 @@ def migrate_delta(**kwargs):
                 trans_date,
                 agrtid,
                 last_update
-            FROM {external_table} 
+            FROM {table_name} 
             WHERE agrtid > {last_id}
                 OR last_update > Convert(datetime, '{last_dag_run}')
         """
-        updated_rows = pd.read_sql_query(query, con=EXTERNAL_DB_CONNECTION)
+        updated_rows = pd.read_sql_query(query, con=external_conn)
+        #updated_rows = pd.read_sql_query(query, con=EXTERNAL_DB_CONNECTION)
 
         if updated_rows.empty:
-            print(f"No new data from table {external_table} in source database.", flush=True)
+            print(f"No new data from table {table_name} in source database.", flush=True)
         else:
             # Delete rows with duplicate agrtid before insert -
             # in case new last_update with existing agrtid
@@ -76,7 +76,7 @@ def migrate_delta(**kwargs):
                 # TODO: Deleting single row is super slow, speed it up.
                 for i, agrtid in enumerate(agrtid_list):
                     print(f"{i+1}/{n_updates}\tRemoving {agrtid}")
-                    delete_row(local_db_conn, local_table, agrtid)
+                    delete_row(local_db_conn, table_name, agrtid)
             
             print("Adding updated rows to local db.")
 
@@ -84,13 +84,13 @@ def migrate_delta(**kwargs):
             # I doubt we ever will see more than 10000 rows updated in a table between runs though..
             if len(updated_rows) <= 10000:
                 updated_rows.to_sql(
-                    local_table, con=local_db_conn, if_exists="append", index=False)
+                    table_name, con=local_db_conn, if_exists="append", index=False)
             else:
                 updated_rows.to_sql(
-                    local_table, con=local_db_conn, if_exists="append", index=False, 
+                    table_name, con=local_db_conn, if_exists="append", index=False, 
                     chunksize=1000)
 
-            print(f"{n_updates} rows updated for table {local_table}.", flush=True)
+            print(f"{n_updates} rows updated for table {table_name}.", flush=True)
 
         # After we've pulled latest id's and "supposedly" updated rows 
         # we compare hash checksums of both databases.
@@ -107,7 +107,7 @@ def migrate_delta(**kwargs):
                 trans_date,
                 agrtid,
                 last_update
-            FROM {local_table} 
+            FROM {table_name} 
         """
         local_df = pd.read_sql_query(query, con=LOCAL_DB_CONNECTION)
 
@@ -122,7 +122,7 @@ def migrate_delta(**kwargs):
                 trans_date,
                 agrtid,
                 last_update
-            FROM {local_table} 
+            FROM {table_name} 
         """
         external_df = pd.read_sql_query(query, con=EXTERNAL_DB_CONNECTION)
 
