@@ -36,10 +36,11 @@ def local_db_connection(
     """
 
     if port is None:
-        conn_url = f"mssql://{username}:{password}@{host}/{db}?driver={driver}"
+        conn_url = f"mssql+pyodbc://{username}:{password}@{host}/{db}?driver={driver}"
     else:  
-        conn_url = f"mssql://{username}:{password}@{host}:{port}/{db}?driver={driver}"
+        conn_url = f"mssql+pyodbc://{username}:{password}@{host}:{port}/{db}?driver={driver}"
     
+    print(conn_url, flush=True)
     engine = sqlalchemy.create_engine(conn_url, fast_executemany=True)
     return engine.connect()
 
@@ -60,47 +61,18 @@ def delete_row(db_conn: sqlalchemy.engine.base.Connection, table: str, agrtid: i
     """
     sql = sqlalchemy.text(
             """
-            DELETE FROM :table
+            DELETE FROM agltransact
             WHERE agrtid = :agrtid
             """
         )
-    db_conn.execute(sql, table=table, agrtid=agrtid)
+    db_conn.execute(sql, agrtid=agrtid)
 
 
 LOCAL_DB_CONNECTION = local_db_connection(
     username="sa",
     password="Valhalla06978!",
-    host="host.docker.internal",
+    host="172.17.0.1",
     port="7000",
-    db="testdata",
-    driver="ODBC Driver 17 for SQL Server"
-)
-
-LOCAL_DB_ENGINE = local_db_engine(
-    username="sa",
-    password="Valhalla06978!",
-    host="host.docker.internal",
-    port="7000",
-    db="testdata",
-    driver="ODBC Driver 17 for SQL Server"
-)
-
-# Use external 
-
-EXTERNAL_DB_CONNECTION = local_db_connection(
-    username="sa",
-    password="Valhalla06978!",
-    host="host.docker.internal",
-    port="8010",
-    db="testdata",
-    driver="ODBC Driver 17 for SQL Server"
-)
-
-EXTERNAL_DB_ENGINE = local_db_engine(
-    username="sa",
-    password="Valhalla06978!",
-    host="host.docker.internal",
-    port="8010",
-    db="testdata",
-    driver="ODBC Driver 17 for SQL Server"
+    db="master",
+    driver="ODBC+Driver+17+for+SQL+Server"
 )
