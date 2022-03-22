@@ -1,31 +1,75 @@
-from datetime import datetime, timedelta
 from airflow import DAG
+from airflow.models import DagRun
 from airflow.models import Variable
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.bash_operator import BashOperator
+
+from datetime import datetime
 import pandas as pd
 import sqlalchemy
 import hashlib
-from lib import (
-    LOCAL_DB_CONNECTION,
-    get_most_recent_dag_run,
-    mssql_server_connection,
-    delete_row
-)
 
 AD_DOMAIN = Variable.get("AD_DOMAIN")
 AD_DOMAIN_USER = Variable.get("AD_DOMAIN_USER")
 AD_DOMAIN_PASSWORD = Variable.get("AD_DOMAIN_PASSWORD")
 
-
 # TODO: Replace hard-code variable
-start_date = datetime(2022, 2, 21)
+start_date = datetime(2022, 3, 15)
+
+
+def mssql_db_conn(
+    username=None, password=None, host=None, db=None, port=None, driver="ODBC Driver 17 for SQL Server", trusted_connection=False 
+    ) -> sqlalchemy.engine.base.Connection:
+    """ 
+    Returns a connection to local mssql instance (username/password login)
+    """
+    if trusted_connection:
+        conn_url = f"mssql+pyodbc://@{host}/{db}?driver={driver}&truster_connection=yes"
+    else:  
+        conn_url = f"mssql+pyodbc://{username}:{password}@{host}:{port}/{db}?driver={driver}"
+  
+    print(f"connecting to {conn_url}")
+
+    engine = sqlalchemy.create_engine(conn_url, fast_executemany=True)
+
+    return engine.connect()
+
+
+def get_most_recent_dag_run(dag_id) -> list:
+    """
+    Get last recebt execution date of a DagRun
+    TODO: Look for other alternatives to sorting the whole list of dagruns.
+    """
+    dag_runs = DagRun.find(dag_id=dag_id)
+    dag_runs.sort(key=lambda x: x.execution_date, reverse=True)
+    return dag_runs[0] if dag_runs else None  
+
+
+def delete_row(db_conn: sqlalchemy.engine.base.Connection, table: str, agrtid: int) -> None:
+    """
+    Delete row with given agrtid
+    """
+    sql = sqlalchemy.text(
+            """
+            DELETE FROM agltransact
+            WHERE agrtid = :agrtid
+            """
+        )
+    db_conn.execute(sql, agrtid=agrtid)
+
 
 def migrate_delta(**kwargs):
 
     table = "agltransact"
     
-    local_db_conn = LOCAL_DB_CONNECTION
+    local_db_conn = mssql_db_conn(
+                        username="sa",
+                        password="Valhalla06978!",
+                        host="172.17.0.1",
+                        port="7000",
+                        db="master",
+                        driver="ODBC+Driver+17+for+SQL+Server"
+    )
 
     last_id = local_db_conn.execute(
         sqlalchemy.text(
@@ -39,7 +83,7 @@ def migrate_delta(**kwargs):
     if last_id is None: 
         print(f"{table} is empty: terminating task.")
     else: 
-        print(f"Last agrtid stored in local database table {table}: {last_id}.")
+        print(f"last agrtid stored in local database table {table}: {last_id}.")
 
         print(kwargs["dag_run"])
 
@@ -48,9 +92,9 @@ def migrate_delta(**kwargs):
         print(f"Most recent dag run: {last_dag_run}")
         if last_dag_run is None:
             last_dag_run = datetime(2022, 3, 2)
-            print(f"Setting initial date to {start_date}")
+            print(f"setting initial date to {start_date}")
  
-        external_conn = mssql_server_connection(host="AGR-DB17.sfso.no", db="AgrHam_PK01")
+        external_db_conn = mssql_db_conn(host="AGR-DB17.sfso.no", db="AgrHam_PK01", trusted_connection=True)
 
         query = f"""
             SELECT
@@ -66,10 +110,10 @@ def migrate_delta(**kwargs):
             WHERE agrtid > {last_id}
                 --OR last_update > Convert(datetime, '{last_dag_run}')
         """
-        updated_rows = pd.read_sql_query(query, con=external_conn)
+        updated_rows = pd.read_sql_query(query, con=external_db_conn)
 
         if updated_rows.empty:
-            print(f"No new data from table {table} in source database.", flush=True)
+            print(f"no new data from table {table} in source database.", flush=True)
         else:
             # Delete rows with duplicate agrtid before insert -
             # in case new last_update with existing agrtid
@@ -81,7 +125,7 @@ def migrate_delta(**kwargs):
                     print(f"{i+1}/{n_updates}\tRemoving {agrtid}")
                     delete_row(local_db_conn, table, agrtid)
             
-            print("Adding updated rows to local db.")
+            print("adding updated rows to local db.")
 
             # TODO: Set to higher limits and chunksize when working on a more robust server
             # I doubt we ever will see more than 10000 rows updated in a table between runs though..
@@ -113,7 +157,7 @@ def migrate_delta(**kwargs):
             where agrtid > {last_id}
             ORDER BY agrtid DESC
         """
-        local_df = pd.read_sql_query(query, con=LOCAL_DB_CONNECTION)
+        local_df = pd.read_sql_query(query, con=local_db_conn)
 
         query = f"""
             SELECT TOP(100)
@@ -129,12 +173,12 @@ def migrate_delta(**kwargs):
             where agrtid > {last_id}
             ORDER BY agrtid DESC
         """
-        external_df = pd.read_sql_query(query, con=external_conn)
+        external_df = pd.read_sql_query(query, con=external_db_conn)
 
         local_df_hash = hashlib.sha256(local_df.to_json().encode()).hexdigest()
         external_df_hash = hashlib.sha256(external_df.to_json().encode()).hexdigest()    
 
-        print(f"Does hashes match for TOP 10 rows: {local_df_hash==external_df_hash}", flush=True)
+        print(f"does hashes match for TOP 10 rows: {local_df_hash==external_df_hash}", flush=True)
     
     
 args = {
@@ -159,7 +203,10 @@ with DAG(
 
     kerberos_init_task = BashOperator(
         task_id="kerberos_init", 
-        bash_command=f"echo {AD_DOMAIN_PASSWORD} | kinit {AD_DOMAIN_USER}@{AD_DOMAIN}",
+        bash_command=f"""
+            echo {AD_DOMAIN_PASSWORD} | kinit {AD_DOMAIN_USER}@{AD_DOMAIN};
+            echo "Kerberos initialised;"
+            """,
     )
 
     migrate_delta_task = PythonOperator(
