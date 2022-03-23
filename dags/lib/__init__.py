@@ -67,7 +67,7 @@ def delete_row(db_conn: sqlalchemy.engine.base.Connection, table: str, agrtid: i
         )
     db_conn.execute(sql, agrtid=agrtid)
 
-
+"""
 LOCAL_DB_CONNECTION = local_db_connection(
     username="sa",
     password="Valhalla06978!",
@@ -76,3 +76,4 @@ LOCAL_DB_CONNECTION = local_db_connection(
     db="master",
     driver="ODBC+Driver+17+for+SQL+Server"
 )
+"""
