@@ -1,5 +1,7 @@
 **__pycache__/
 
+.local.env
+
 # Local persistant db storage
 **db-volumes
 
@@ -13,5 +15,3 @@ services/mssql/backups/
 
 # Data used for local testing
 data/*
-
-.env
