@@ -125,13 +125,16 @@ def migrate_delta():
         WHERE period = {period}
     """
 
+    start_time = time.time()
     for i, chunk in enumerate(pd.read_sql_query(query, con=external_db_conn, chunksize=chunksize)):
         print(f"({i+1}/{math.ceil(n_updated_rows/chunksize)}): Migrating row {i*chunksize} - {i*chunksize+chunksize}")
         df = pd.DataFrame(chunk.values, columns=chunk.columns)
-        df.to_sql(table, con=local_db_conn, if_exists='append', index=False, method='multi')
+        df.to_sql(table, con=local_db_conn, if_exists='append', index=False)
         time.sleep(wait_time)
 
-    print(f"Rows successfully migrated", flush=True)
+    print(i)
+    migration_time = time.time() - start_time - wait_time*(i+1)
+    print(f"Rows successfully migrated in {migration_time} seconds", flush=True)
             
     
 args = {
